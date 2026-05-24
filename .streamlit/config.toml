@@ -1,0 +1,18 @@
+[theme]
+primaryColor = "#2E86AB"
+backgroundColor = "#F8F9FB"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1A1A2E"
+font = "sans serif"
+
+[server]
+maxUploadSize = 200
+
+[browser]
+gatherUsageStats = false
+
+[runner]
+fastReruns = true
+
+[client]
+showSidebarNavigation = true

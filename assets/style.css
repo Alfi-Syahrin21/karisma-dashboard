@@ -1,0 +1,148 @@
+/* ── Global Reset & Font ── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Sidebar ── */
+section[data-testid="stSidebar"] {
+    background: #1A1A2E;
+    border-right: 1px solid #2E2E4A;
+}
+section[data-testid="stSidebar"] * {
+    color: #E0E0EF !important;
+}
+section[data-testid="stSidebar"] .stSelectbox label,
+section[data-testid="stSidebar"] .stMultiSelect label {
+    color: #9090AA !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* ── KPI Metric Cards ── */
+[data-testid="stMetric"] {
+    background: #FFFFFF;
+    border: 1px solid #E8EAF0;
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease;
+}
+[data-testid="stMetric"]:hover {
+    box-shadow: 0 4px 12px rgba(46,134,171,0.12);
+    border-color: #2E86AB;
+}
+[data-testid="stMetricLabel"] {
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6B7280 !important;
+    font-weight: 500 !important;
+}
+[data-testid="stMetricValue"] {
+    font-size: 1.9rem !important;
+    font-weight: 600 !important;
+    color: #1A1A2E !important;
+    font-family: 'DM Mono', monospace !important;
+}
+[data-testid="stMetricDelta"] {
+    font-size: 0.8rem !important;
+}
+
+/* ── Page Header ── */
+.page-header {
+    padding: 1.5rem 0 1rem 0;
+    border-bottom: 2px solid #2E86AB;
+    margin-bottom: 1.8rem;
+}
+.page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1A1A2E;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+.page-header p {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin: 0.3rem 0 0 0;
+}
+
+/* ── Section Label ── */
+.section-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #2E86AB;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+/* ── Chart Container ── */
+.chart-card {
+    background: #FFFFFF;
+    border: 1px solid #E8EAF0;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Insight Card ── */
+.insight-card {
+    background: linear-gradient(135deg, #EBF4FA 0%, #F8F9FB 100%);
+    border-left: 3px solid #2E86AB;
+    border-radius: 0 8px 8px 0;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 0.7rem;
+    font-size: 0.88rem;
+    color: #1A1A2E;
+    line-height: 1.5;
+}
+.insight-card strong {
+    color: #2E86AB;
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Dataframe ── */
+[data-testid="stDataFrame"] {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #E8EAF0;
+}
+
+/* ── Tabs ── */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 4px;
+    background: #F0F2F6;
+    border-radius: 10px;
+    padding: 4px;
+}
+.stTabs [data-baseweb="tab"] {
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+}
+.stTabs [aria-selected="true"] {
+    background: #2E86AB !important;
+    color: white !important;
+}
+
+/* ── Divider ── */
+hr {
+    border: none;
+    border-top: 1px solid #E8EAF0;
+    margin: 1.5rem 0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F0F2F6; }
+::-webkit-scrollbar-thumb { background: #CBD5E0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2E86AB; }
