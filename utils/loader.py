@@ -3,6 +3,7 @@ import streamlit as st
 from pathlib import Path
 
 DATA_PATH = Path(__file__).parent.parent / "data" / "glints_v2_cleaned.csv"
+GDRIVE_URL = "https://drive.google.com/uc?id=1XxIIyGskwF_sdfLF6V9zFjNReXkdh2F0"
 
 @st.cache_data(show_spinner="Memuat dataset Glints...")
 def load_data() -> pd.DataFrame:
@@ -10,7 +11,10 @@ def load_data() -> pd.DataFrame:
     Load cleaned CSV hasil export dari notebook.
     Di-cache oleh Streamlit agar tidak dibaca ulang setiap halaman.
     """
-    df = pd.read_csv(DATA_PATH, low_memory=False)
+    if DATA_PATH.exists():
+        df = pd.read_csv(DATA_PATH, low_memory=False)
+    else:
+        df = pd.read_csv(GDRIVE_URL, low_memory=False)
 
     # ── Pastikan tipe data kolom numerik benar ──
     numeric_cols = [
