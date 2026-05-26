@@ -1,7 +1,7 @@
 # 📊 Glints Job Market Dashboard
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://karisma-dashboard.streamlit.app/)
-> **Live Demo:** [👉 Klik di sini untuk melihat dashboard (https://karisma-dashboard.streamlit.app/)](https://karisma-dashboard.streamlit.app/)
+
+> **Live Demo:** [👉 Klik di sini untuk melihat dashboard](https://karisma-dashboard.streamlit.app/)
 
 ---
 
