@@ -24,6 +24,9 @@ def _explode_skills(df: pd.DataFrame) -> pd.Series:
         .loc[lambda s: s != '']
     )
 
+def _sal_col(df: pd.DataFrame) -> str:
+    return 'salary_avg_usd' if 'salary_avg_usd' in df.columns else 'salary_avg'
+
 
 def chart_top_skills(df: pd.DataFrame, n: int = 25) -> go.Figure:
     skills = _explode_skills(df)
@@ -48,7 +51,8 @@ def chart_top_skills(df: pd.DataFrame, n: int = 25) -> go.Figure:
 
 
 def chart_skill_premium(df_sal: pd.DataFrame, n: int = 20) -> go.Figure:
-    """Bar chart skill vs median salary — highlight atas/bawah median pasar."""
+    """Bar chart skill vs median salary USD — highlight atas/bawah median pasar."""
+    col = _sal_col(df_sal)
     rows = []
     for _, row in df_sal.iterrows():
         if pd.isna(row.get('Skills')):
@@ -56,14 +60,14 @@ def chart_skill_premium(df_sal: pd.DataFrame, n: int = 20) -> go.Figure:
         for sk in str(row['Skills']).split(','):
             sk = sk.strip()
             if sk:
-                rows.append({'skill': sk, 'salary_avg_jt': row['salary_avg_jt']})
+                rows.append({'skill': sk, 'salary': row[col]})
 
     if not rows:
         return go.Figure()
 
     skill_df = pd.DataFrame(rows)
     agg = (
-        skill_df.groupby('skill')['salary_avg_jt']
+        skill_df.groupby('skill')['salary']
         .agg(median='median', count='count')
         .query('count >= 30')
         .sort_values('median', ascending=False)
@@ -71,7 +75,7 @@ def chart_skill_premium(df_sal: pd.DataFrame, n: int = 20) -> go.Figure:
         .sort_values('median')
         .reset_index()
     )
-    overall_median = df_sal['salary_avg_jt'].median()
+    overall_median = df_sal[col].median()
     agg['warna'] = agg['median'].apply(
         lambda v: 'Di atas median pasar' if v >= overall_median else 'Di bawah median pasar'
     )
@@ -84,20 +88,20 @@ def chart_skill_premium(df_sal: pd.DataFrame, n: int = 20) -> go.Figure:
         color='warna',
         color_discrete_map=color_map,
         title=f'Top {n} Skill — Median Salary Tertinggi (min 30 lowongan)',
-        text=agg['median'].round(1),
-        labels={'median': 'Median Salary (Juta Rp/bulan)', 'skill': ''},
+        text=agg['median'].round(0).astype(int),
+        labels={'median': 'Median Salary (USD/month)', 'skill': ''},
     )
-    fig.update_traces(texttemplate='%{text} Jt', textposition='outside')
+    fig.update_traces(texttemplate='$%{text:,}', textposition='outside')
     fig.add_vline(
         x=overall_median, line_dash='dash', line_color='gray',
-        annotation_text=f'Median pasar: {overall_median:.1f} Jt',
+        annotation_text=f'Median pasar: ${overall_median:,.0f}',
         annotation_position='top right',
     )
     fig.update_layout(
         **LAYOUT, height=560,
         legend=dict(title='', orientation='h', y=-0.12),
     )
-    fig.update_xaxes(showgrid=True, gridcolor='#F0F2F6')
+    fig.update_xaxes(showgrid=True, gridcolor='#F0F2F6', title='Median Salary (USD/month)')
     fig.update_yaxes(title='')
     return fig
 

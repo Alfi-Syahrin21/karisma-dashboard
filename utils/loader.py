@@ -3,8 +3,7 @@ import streamlit as st
 from pathlib import Path
 
 DATA_PATH = Path(__file__).parent.parent / "data" / "glints_v2_cleaned.csv"
-GDRIVE_URL = "https://drive.google.com/uc?id=1XxIIyGskwF_sdfLF6V9zFjNReXkdh2F0"
-
+GDRIVE_URL = "https://drive.google.com/uc?id=1qIOvPXqbz-qkSwfMo2I_DAkJEq4pYccj"
 @st.cache_data(show_spinner="Memuat dataset Glints...")
 def load_data() -> pd.DataFrame:
     """
@@ -19,9 +18,10 @@ def load_data() -> pd.DataFrame:
     # ── Pastikan tipe data kolom numerik benar ──
     numeric_cols = [
         'salary_min_monthly', 'salary_max_monthly',
-        'salary_avg', 'salary_avg_jt',
-        'salary_range_width_jt', 'skill_count',
-        'education_rank',
+        'salary_avg', 'salary_avg_usd', 'salary_avg_jt',
+        'salary_min_usd', 'salary_max_usd',
+        'salary_range_width_usd', 'salary_range_width_jt',
+        'skill_count', 'education_rank',
     ]
     for col in numeric_cols:
         if col in df.columns:
@@ -40,6 +40,10 @@ def load_data() -> pd.DataFrame:
     for col in cat_cols:
         if col in df.columns:
             df[col] = df[col].fillna('Tidak Diketahui')
+
+    # ── Fallback: hitung salary_avg_usd jika belum ada di CSV ──
+    if 'salary_avg_usd' not in df.columns and 'salary_avg' in df.columns:
+        df['salary_avg_usd'] = df['salary_avg']
 
     return df
 

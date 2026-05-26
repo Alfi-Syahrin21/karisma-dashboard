@@ -8,7 +8,11 @@ def render_kpi_cards(df: pd.DataFrame, df_sal: pd.DataFrame) -> None:
 
     total_jobs = len(df)
     pct_salary = df['has_salary'].mean() * 100 if 'has_salary' in df.columns else 0
-    median_sal = df_sal['salary_avg_jt'].median() if len(df_sal) > 0 else 0
+
+    # Gunakan salary_avg_usd (USD/bulan); fallback ke salary_avg jika kolom belum ada
+    sal_col = 'salary_avg_usd' if 'salary_avg_usd' in df_sal.columns else 'salary_avg'
+    median_sal = df_sal[sal_col].median() if len(df_sal) > 0 else 0
+
     pct_remote = (
         (df['Work_Arr_Label'].str.upper() == 'REMOTE').mean() * 100
         if 'Work_Arr_Label' in df.columns else 0
@@ -23,8 +27,8 @@ def render_kpi_cards(df: pd.DataFrame, df_sal: pd.DataFrame) -> None:
     with col2:
         st.metric(
             label="Median Salary",
-            value=f"{median_sal:.1f} Jt",
-            help="Median salary bulanan (hanya posting dengan data salary)",
+            value=f"${median_sal:,.0f}/mo",
+            help="Median salary bulanan dalam USD (hanya posting dengan data salary)",
         )
     with col3:
         st.metric(

@@ -21,6 +21,9 @@ df_raw = load_data()
 df     = render_sidebar_filters(df_raw)
 df_sal = get_salary_df(df)
 
+# ── Helper kolom USD ──
+SAL_COL = 'salary_avg_usd' if 'salary_avg_usd' in df.columns else 'salary_avg'
+
 # ── Header ──
 st.markdown("""
 <div class="page-header">
@@ -38,10 +41,14 @@ with col_f1:
     keyword = st.text_input("🔎 Cari judul pekerjaan", placeholder="contoh: Data Analyst, Frontend...")
 
 with col_f2:
-    salary_range = st.slider(
-        "Rentang Salary (Juta Rp/bulan)",
-        min_value=0, max_value=100, value=(0, 50), step=1,
-    ) if 'salary_avg_jt' in df.columns else (0, 100)
+    if SAL_COL in df.columns:
+        sal_max = int(df[SAL_COL].quantile(0.99)) if df[SAL_COL].notna().any() else 5000
+        salary_range = st.slider(
+            "Rentang Salary (USD/month)",
+            min_value=0, max_value=max(sal_max, 2000), value=(0, min(sal_max, 2000)), step=50,
+        )
+    else:
+        salary_range = (0, 2000)
 
 with col_f3:
     has_salary_only = st.checkbox("Hanya tampilkan yang ada data salary", value=False)
@@ -55,10 +62,10 @@ if keyword:
 if has_salary_only:
     df_exp = df_exp[df_exp['has_salary'] == True]
 
-if 'salary_avg_jt' in df_exp.columns:
+if SAL_COL in df_exp.columns:
     df_exp = df_exp[
-        (df_exp['salary_avg_jt'].isna()) |
-        (df_exp['salary_avg_jt'].between(salary_range[0], salary_range[1]))
+        (df_exp[SAL_COL].isna()) |
+        (df_exp[SAL_COL].between(salary_range[0], salary_range[1]))
     ]
 
 st.caption(f"Ditemukan **{len(df_exp):,}** lowongan.")
@@ -71,18 +78,19 @@ st.markdown('<p class="section-label">Daftar Lowongan</p>', unsafe_allow_html=Tr
 display_cols = [c for c in [
     'Title', 'Industry', 'Job_Category_parent', 'Job_Category',
     'Job_Type_Label', 'Work_Arr_Label', 'experience_level',
-    'salary_avg_jt', 'salary_tier', 'Education_Label', 'Job_Link',
+    SAL_COL, 'salary_tier', 'Education_Label', 'Job_Link',
 ] if c in df_exp.columns]
 
 df_display = df_exp[display_cols].copy()
-if 'salary_avg_jt' in df_display.columns:
-    df_display['salary_avg_jt'] = df_display['salary_avg_jt'].round(1)
+if SAL_COL in df_display.columns:
+    df_display[SAL_COL] = df_display[SAL_COL].round(0)
 
 rename_map = {
     'Title': 'Judul', 'Industry': 'Industri',
     'Job_Category_parent': 'Job Cluster', 'Job_Category': 'Job Category',
     'Job_Type_Label': 'Tipe', 'Work_Arr_Label': 'Arrangement',
-    'experience_level': 'Experience', 'salary_avg_jt': 'Salary (Jt)',
+    'experience_level': 'Experience',
+    SAL_COL: 'Salary (USD/mo)',
     'salary_tier': 'Tier', 'Education_Label': 'Pendidikan', 'Job_Link': 'Link',
 }
 df_display = df_display.rename(columns=rename_map)
@@ -93,7 +101,7 @@ st.dataframe(
     height=380,
     column_config={
         "Link": st.column_config.LinkColumn("Link", display_text="Buka ↗"),
-        "Salary (Jt)": st.column_config.NumberColumn("Salary (Jt)", format="%.1f Jt"),
+        "Salary (USD/mo)": st.column_config.NumberColumn("Salary (USD/mo)", format="$%.0f"),
     },
 )
 
@@ -109,9 +117,10 @@ st.markdown("#### Posisi tiap Job Category di matriks Demand × Median Salary")
 df_sal_exp = get_salary_df(df_exp)
 
 if len(df_sal_exp) > 10:
+    sal_col_exp = 'salary_avg_usd' if 'salary_avg_usd' in df_sal_exp.columns else 'salary_avg'
     cat_matrix = (
         df_sal_exp.groupby('Job_Category')
-        .agg(count=('salary_avg_jt', 'count'), median_sal=('salary_avg_jt', 'median'))
+        .agg(count=(sal_col_exp, 'count'), median_sal=(sal_col_exp, 'median'))
         .query('count >= 5')
         .reset_index()
     )
@@ -141,10 +150,10 @@ if len(df_sal_exp) > 10:
         title='Demand × Salary Matrix — Job Category Level 3',
         labels={
             'count': 'Jumlah Lowongan (Demand)',
-            'median_sal': 'Median Salary (Juta Rp/bulan)',
+            'median_sal': 'Median Salary (USD/month)',
             'Job_Category': 'Job Category',
         },
-        hover_data={'count': True, 'median_sal': ':.1f'},
+        hover_data={'count': True, 'median_sal': ':,.0f'},
         opacity=0.8,
         size='count',
         size_max=30,
@@ -161,7 +170,7 @@ if len(df_sal_exp) > 10:
         legend=dict(orientation='h', y=-0.18),
     )
     fig_quad.update_xaxes(showgrid=True, gridcolor='#F0F2F6')
-    fig_quad.update_yaxes(showgrid=True, gridcolor='#F0F2F6')
+    fig_quad.update_yaxes(showgrid=True, gridcolor='#F0F2F6', title='Median Salary (USD/month)')
     st.plotly_chart(fig_quad, use_container_width=True)
 
     # Ringkasan per kuadran
