@@ -19,7 +19,7 @@ if css_path.exists():
 st.markdown("""
 <div class="page-header">
     <h1>📊 Job Market Dashboard</h1>
-    <p>Analisis mendalam pasar kerja Indonesia — 60.000+ lowongan dari platform Glints</p>
+    <p>Analisis mendalam pasar kerja Indonesia — berdasarkan platform Glints</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -35,4 +35,4 @@ Selamat datang! Gunakan **navigasi di sidebar kiri** untuk menjelajahi dashboard
 | 🔍 Job Explorer | Filter & cari lowongan spesifik secara interaktif |
 """)
 
-st.info("💡 Gunakan **Filter Global** di sidebar untuk memfilter data di semua halaman sekaligus.", icon="💡")
+st.info("Gunakan **Filter Global** di sidebar untuk memfilter data di semua halaman sekaligus.", icon="💡")
